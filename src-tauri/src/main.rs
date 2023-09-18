@@ -6,9 +6,6 @@ use std::env;
 
 #[tauri::command]
 fn get_environment_variable (name: &str) -> String {
-    for (key, value) in env::vars() {
-        println!("{key}: {value}");
-    }
     env::var(name).unwrap_or_else(|_| "".to_string())
 }
 

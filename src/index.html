@@ -10,15 +10,21 @@
   </head>
   <body>
     <section class="init-section">
-      <label for="hours">Hours: </label>
-      <input type="number" value="0" id="hours" />
-      <label for="minutes">Minutes: </label>
-      <input type="number" value="0" id="minutes" />
-      <label for="seconds">Seconds: </label>
-      <input type="number" value="0" id="seconds" />
       <section>
+        <label for="hours">Hours: </label>
+        <input type="number" value="0" id="hours" />
+      </section>
+      <section>
+        <label for="minutes">Minutes: </label>
+        <input type="number" value="0" id="minutes" />
+      </section>
+      <section>
+        <label for="seconds">Seconds: </label>
+        <input type="number" value="0" id="seconds" />
+      </section>
+      <section class="button-wrapper">
         <button id="startButton">Start random project</button>
-        <button id="startSimpleButton">Start (just timer)</button>
+        <button id="startSimpleButton">Start timer</button>
       </section>
     </section>
     <section class="countdown hidden">
@@ -42,5 +48,6 @@
       <input type="text" value="" id="project" />
       <button  id="addButton">Add</button>
     </section>
+  <section id="debug"></section>
   </body>
 </html>

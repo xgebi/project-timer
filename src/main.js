@@ -1,6 +1,7 @@
 import Database from "./sql.js";
 
 const { invoke } = window.__TAURI__.tauri;
+const dialog = window.__TAURI__.dialog;
 
 let db;
 let globalRows = [];
@@ -66,8 +67,12 @@ async function addButtonHandler() {
 }
 
 async function removeButtonHandler(event) {
-  await db.execute(`DELETE FROM pt_project_list WHERE name = $1`, [event.target.dataset['name']])
-  await fetchProjectList();
+  // The await below has to be there because the confirm function in Tauri returns a Promise
+  const result = await confirm(`Do you really want to delete ${event.target.dataset['name']}?`, 'Project Timer');
+  if (result) {
+    await db.execute(`DELETE FROM pt_project_list WHERE name = $1`, [event.target.dataset['name']])
+    await fetchProjectList();
+  }
 }
 
 async function startProjectButtonHandler(event) {
@@ -82,17 +87,18 @@ function renderTableRows(rows) {
     nameTd.textContent = row.name;
     tr.appendChild(nameTd);
     const actionsTd = document.createElement('td');
-    const deleteButton = document.createElement('button')
-    deleteButton.setAttribute('data-name', row.name);
-    deleteButton.textContent = 'Remove';
-    deleteButton.addEventListener('click', removeButtonHandler);
-    actionsTd.append(deleteButton);
     const startProjectButton = document.createElement('button')
     startProjectButton.setAttribute('data-name', row.name);
     startProjectButton.textContent = 'Start';
     startProjectButton.addEventListener('click', startProjectButtonHandler);
     startProjectButton.setAttribute('data-name', row.name);
     actionsTd.append(startProjectButton);
+    const deleteButton = document.createElement('button')
+    deleteButton.setAttribute('data-name', row.name);
+    deleteButton.textContent = 'Remove';
+    deleteButton.addEventListener('click', removeButtonHandler);
+    deleteButton.classList.add('button--danger')
+    actionsTd.append(deleteButton);
     tr.appendChild(actionsTd);
 
     trArr.push(tr);
@@ -123,7 +129,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   document.querySelector("#startSimpleButton").addEventListener('click', () => startButtonHandler(''));
   document.querySelector("#stopButton").addEventListener('click', stopButtonHandler);
   document.querySelector("#addButton").addEventListener('click', addButtonHandler);
-  const dbName = invoke('get_environment_variable', { name: 'PT_DB' });
+  const dbName = await invoke('get_environment_variable', { name: 'PT_DB' });
   db = await Database.load(`sqlite:${dbName ? dbName : 'project-timer.db'}`);
   await db.execute(`create table if not exists pt_project_list (name text primary key)`);
   await fetchProjectList();
