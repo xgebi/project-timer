@@ -1,0 +1,14 @@
+{
+  "name": "project-timer",
+  "private": true,
+  "version": "0.0.2",
+  "type": "module",
+  "scripts": {
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.4.0"
+  },
+  "dependencies": {
+  }
+}

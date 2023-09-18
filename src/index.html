@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tauri App</title>
+    <script type="module" src="/sql.js" defer></script>
+    <script type="module" src="/main.js" defer></script>
+  </head>
+  <body>
+    <section class="init-section">
+      <label for="hours">Hours: </label>
+      <input type="number" value="0" id="hours" />
+      <label for="minutes">Minutes: </label>
+      <input type="number" value="0" id="minutes" />
+      <label for="seconds">Seconds: </label>
+      <input type="number" value="0" id="seconds" />
+      <button id="startButton">Start</button>
+    </section>
+    <section class="countdown hidden">
+      <h1>Current project:</h1>
+      <h2></h2>
+      <p></p>
+      <button id="stopButton">Stop</button>
+    </section>
+    <section class="project-section">
+      <table>
+        <thead>
+          <tr>
+            <th>Project name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <label for="project">Project name: </label>
+      <input type="text" value="" id="project" />
+      <button  id="addButton">Add</button>
+    </section>
+  </body>
+</html>
