@@ -1,7 +1,5 @@
-# Tauri + Vanilla
+# Project Timer
 
-This template should help get you started developing with Tauri in vanilla HTML, CSS and Javascript.
+Project Timer is a simple desktop application that uses Pomodoro technique. It also has function to pick random project from the list in case a person isn't sure which project should have a higher priority.
 
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+At the moment Mac is the only platform supported.

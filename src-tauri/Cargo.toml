@@ -1,8 +1,8 @@
 [package]
 name = "project-timer"
-version = "0.0.0"
-description = "A Tauri App"
-authors = ["you"]
+version = "0.1.0"
+description = "Not so simple timer"
+authors = ["Sarah Gebauer (sarah@sarahgebauer.com)"]
 license = ""
 repository = ""
 edition = "2021"
