@@ -6,7 +6,7 @@ let db;
 let globalRows = [];
 let interval;
 
-async function startButtonHandler() {
+async function startButtonHandler(projectName = null) {
   const hours = document.querySelector("#hours").value;
   const minutes = document.querySelector("#minutes").value;
   const seconds = document.querySelector("#seconds").value;
@@ -21,7 +21,14 @@ async function startButtonHandler() {
   if (globalRows.length > 0) {
     h1.classList.remove('hidden');
     h2.classList.remove('hidden');
-    h2.textContent = globalRows[Math.floor(Math.random() * globalRows.length)].name;
+    if (projectName === '') {
+      h1.classList.add('hidden');
+      h2.classList.add('hidden');
+    } else if (projectName.length > 0) {
+      h2.textContent = projectName;
+    } else {
+      h2.textContent = globalRows[Math.floor(Math.random() * globalRows.length)].name;
+    }
   } else {
     h1.classList.add('hidden');
     h2.classList.add('hidden');
@@ -34,7 +41,7 @@ async function startButtonHandler() {
       const h = Math.floor(total / 3600);
       const m = Math.floor((total - (h * 3600)) / 60);
       const s = total - (h*3600) - (m * 60);
-      p.textContent = `${h}:${m}:${s}`;
+      p.textContent = `${h<10 ? '0' : ''}${h}:${m<10 ? '0' : ''}${m}:${s<10 ? '0' : ''}${s}`;
     } else {
       init.classList.remove('hidden');
       countdown.classList.add('hidden');
@@ -63,6 +70,10 @@ async function removeButtonHandler(event) {
   await fetchProjectList();
 }
 
+async function startProjectButtonHandler(event) {
+  await startButtonHandler(event.target.dataset['name']);
+}
+
 function renderTableRows(rows) {
   const trArr = [];
   for (const row of rows) {
@@ -76,6 +87,12 @@ function renderTableRows(rows) {
     deleteButton.textContent = 'Remove';
     deleteButton.addEventListener('click', removeButtonHandler);
     actionsTd.append(deleteButton);
+    const startProjectButton = document.createElement('button')
+    startProjectButton.setAttribute('data-name', row.name);
+    startProjectButton.textContent = 'Start';
+    startProjectButton.addEventListener('click', startProjectButtonHandler);
+    startProjectButton.setAttribute('data-name', row.name);
+    actionsTd.append(startProjectButton);
     tr.appendChild(actionsTd);
 
     trArr.push(tr);
@@ -103,9 +120,11 @@ async function fetchProjectList() {
 
 window.addEventListener("DOMContentLoaded", async () => {
   document.querySelector("#startButton").addEventListener('click', startButtonHandler);
+  document.querySelector("#startSimpleButton").addEventListener('click', () => startButtonHandler(''));
   document.querySelector("#stopButton").addEventListener('click', stopButtonHandler);
   document.querySelector("#addButton").addEventListener('click', addButtonHandler);
-  db = await Database.load("sqlite:project-timer.db");
+  const dbName = invoke('get_environment_variable', { name: 'PT_DB' });
+  db = await Database.load(`sqlite:${dbName ? dbName : 'project-timer.db'}`);
   await db.execute(`create table if not exists pt_project_list (name text primary key)`);
   await fetchProjectList();
 });
