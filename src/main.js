@@ -6,6 +6,9 @@ const dialog = window.__TAURI__.dialog;
 let db;
 let globalRows = [];
 let interval;
+let total = 0;
+let remaining = 0;
+let latestProject = '';
 
 async function startButtonHandler(projectName = null) {
   const hours = document.querySelector("#hours").value;
@@ -25,28 +28,35 @@ async function startButtonHandler(projectName = null) {
     if (projectName === '') {
       h1.classList.add('hidden');
       h2.classList.add('hidden');
-    } else if (projectName.length > 0) {
+    } else if (projectName?.length > 0) {
       h2.textContent = projectName;
+      latestProject = projectName;
     } else {
-      h2.textContent = globalRows[Math.floor(Math.random() * globalRows.length)].name;
+      const name = globalRows[Math.floor(Math.random() * globalRows.length)].name
+      h2.textContent = name;
+      latestProject = name;
     }
   } else {
     h1.classList.add('hidden');
     h2.classList.add('hidden');
   }
 
-  let total = (+seconds + (+minutes * 60) + (+hours * 60 * 60));
-  interval = setInterval(() => {
-    if (total > 0) {
-      total -= 1;
-      const h = Math.floor(total / 3600);
-      const m = Math.floor((total - (h * 3600)) / 60);
-      const s = total - (h*3600) - (m * 60);
+  total = (+seconds + (+minutes * 60) + (+hours * 60 * 60));
+  remaining = total;
+  interval = setInterval(async () => {
+    if (remaining > 0) {
+      remaining -= 1;
+      const h = Math.floor(remaining / 3600);
+      const m = Math.floor((remaining - (h * 3600)) / 60);
+      const s = remaining - (h*3600) - (m * 60);
       p.textContent = `${h<10 ? '0' : ''}${h}:${m<10 ? '0' : ''}${m}:${s<10 ? '0' : ''}${s}`;
     } else {
       init.classList.remove('hidden');
       countdown.classList.add('hidden');
       clearInterval(interval);
+      await db.execute(`INSERT INTO pt_finished_projects (name, duration) VALUES ($1, $2)`, [latestProject, total - remaining])
+      const result = await db.select("SELECT * from pt_finished_projects");
+      console.log(result);
     }
   }, 1000)
 }
@@ -57,6 +67,9 @@ async function stopButtonHandler() {
   init.classList.remove('hidden');
   countdown.classList.add('hidden');
   clearInterval(interval);
+  await db.execute(`INSERT INTO pt_finished_projects (name, duration) VALUES ($1, $2)`, [latestProject, total - remaining])
+  const result = await db.select("SELECT * from pt_finished_projects");
+  console.log(result);
 }
 
 async function addButtonHandler() {
@@ -125,12 +138,18 @@ async function fetchProjectList() {
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
-  document.querySelector("#startButton").addEventListener('click', startButtonHandler);
+  document.querySelector("#startButton").addEventListener('click', () => startButtonHandler());
   document.querySelector("#startSimpleButton").addEventListener('click', () => startButtonHandler(''));
   document.querySelector("#stopButton").addEventListener('click', stopButtonHandler);
   document.querySelector("#addButton").addEventListener('click', addButtonHandler);
   const dbName = await invoke('get_environment_variable', { name: 'PT_DB' });
   db = await Database.load(`sqlite:${dbName ? dbName : 'project-timer.db'}`);
   await db.execute(`create table if not exists pt_project_list (name text primary key)`);
+  await db.execute(`create table if not exists pt_finished_projects (
+    id integer primary key,
+    name text,
+    duration integer not null,
+    finished DATETIME DEFAULT CURRENT_TIMESTAMP
+                                                )`);
   await fetchProjectList();
 });

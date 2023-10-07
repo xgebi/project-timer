@@ -75,23 +75,21 @@ table button {
     color: #e7e7e7;
   }
 
-  button,
   input {
+    background: #1f1f1f;
     color: #e7e7e7;
   }
 
-  input {
-    background: #1f1f1f;
-  }
-
   button {
-    background: #1b2936;
-    box-shadow: 1px 1px 1px 1px #131313;
+    background: #45a5ff;
+    box-shadow: 1px 1px 1px 1px #7ddaff;
+    color: rgb(23, 23, 23);
   }
 
   .button--danger {
     background: #ffaaaa;
     color: #1f1f1f;
+    box-shadow: 1px 1px 1px 1px #730016;
   }
 }
 

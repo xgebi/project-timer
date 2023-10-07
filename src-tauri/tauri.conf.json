@@ -42,7 +42,7 @@
         "resizable": true,
         "title": "project-timer",
         "width": 300,
-        "height": 300,
+        "height": 310,
         "alwaysOnTop": true
       }
     ]
